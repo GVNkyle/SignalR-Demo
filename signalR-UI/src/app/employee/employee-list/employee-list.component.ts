@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Employee } from '../employee';
-import { EmployeeService } from '../employee.service';
+import { Employee } from '../../_core/models/employee';
+import { EmployeeService } from '../../_core/services/employee.service';
 import * as signalR from '@microsoft/signalr';
 import { environment } from 'src/environments/environment';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { SignalrService } from 'src/app/_core/services/signalr.service';
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
@@ -17,7 +18,7 @@ export class EmployeeListComponent implements OnInit {
   errorMessage = '';
 
   _listFilter = '';
-  constructor(private employeeService: EmployeeService, private spinner: NgxSpinnerService) { }
+  constructor(private employeeService: EmployeeService, private spinner: NgxSpinnerService, private signalRService: SignalrService) { }
 
   get listFilter(): string {
     return this._listFilter;
@@ -39,19 +40,8 @@ export class EmployeeListComponent implements OnInit {
       this.spinner.hide();
     }, 1000);
     this.getEmployeeData();
-    const connection = new signalR.HubConnectionBuilder()
-      .configureLogging(signalR.LogLevel.Information)
-      .withUrl(environment.baseUrl + 'notify', {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
-      })
-      .build();
 
-    connection.start().then(function () {
-      console.log('SignalR Connected!');
-    }).catch(function (err) {
-      return console.error(err.toString());
-    });
+    let connection = this.signalRService.connectSignalR();
 
     connection.on("BroadcastMessage", () => {
       this.getEmployeeData();

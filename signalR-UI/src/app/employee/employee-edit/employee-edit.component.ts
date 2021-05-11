@@ -2,8 +2,8 @@ import { Component, OnInit, OnDestroy, ElementRef, ViewChildren } from '@angular
 import { FormControlName, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Employee } from '../employee';
-import { EmployeeService } from '../employee.service';
+import { Employee } from '../../_core/models/employee';
+import { EmployeeService } from '../../_core/services/employee.service';
 
 @Component({
   selector: 'app-employee-edit',

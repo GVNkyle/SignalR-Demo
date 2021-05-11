@@ -39,6 +39,8 @@
     </button>
 
     <div style="margin-bottom: 10px;"></div>
+    <br />
+    <br />
     <div *ngFor="let msg of messages">
         <h6 *ngIf="msg.tranType === 'Add' "><span class="badge bg-success">New employee '{{msg.employeeName}}'
                 added</span>
@@ -49,6 +51,5 @@
         <h6 *ngIf="msg.tranType == 'Delete' "><span class="badge bg-warning text-dark">Employee '{{msg.employeeName}}'
                 deleted</span>
         </h6>
-        <!-- <h6>{{ msg | json }}</h6> -->
     </div>
 </app-modal>

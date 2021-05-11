@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { environment } from 'src/environments/environment';
-import { ModalService } from '../modal/modal.service';
-import { NotificationCountResult, NotificationResult } from '../Notification/notification';
-import { NotificationService } from '../notification/notification.service';
+
+import { NotificationCountResult, NotificationResult } from '../_core/models/notification';
+import { NotificationService } from '../_core/services/notification.service';
+import { ModalService } from '../_core/services/modal.service';
+import { SignalrService } from '../_core/services/signalr.service';
 
 
 @Component({
@@ -17,26 +19,14 @@ export class NavMenuComponent implements OnInit {
   messages: Array<NotificationResult> = [];
   errorMessage = '';
 
-  constructor(private notificationService: NotificationService, private modalService: ModalService) { }
+  constructor(private notificationService: NotificationService, private modalService: ModalService, private signalRService: SignalrService) { }
 
   isExpanded = false;
 
   ngOnInit(): void {
     this.getNotificationCount();
     this.getNotificationMessage();
-    const connection = new signalR.HubConnectionBuilder()
-      .configureLogging(signalR.LogLevel.Information)
-      .withUrl(environment.baseUrl + 'notify', {
-        skipNegotiation: true,
-        transport: signalR.HttpTransportType.WebSockets
-      })
-      .build();
-
-    connection.start().then(function () {
-      console.log('SignalR Connected!');
-    }).catch(function (err) {
-      return console.error(err.toString());
-    });
+    let connection = this.signalRService.connectSignalR();
 
     connection.on("BroadcastMessage", () => {
       this.getNotificationCount();

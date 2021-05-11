@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { Employee } from './employee';
+import { Employee } from '../models/employee';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -31,7 +31,6 @@ export class EmployeeService {
   }
 
   createEmployee(employee: Employee): Observable<Employee> {
-    // const headers = new HttpHeaders({ 'Content-Type': 'application/json' }); //, { headers: headers }
     return this.http.post<Employee>(this.employeesUrl, employee)
       .pipe(
         catchError(this.handleError)
@@ -40,17 +39,15 @@ export class EmployeeService {
 
   deleteEmployee(id: string): Observable<{}> {
     const url = `${this.employeesUrl}/${id}`;
-    return this.http.delete<Employee>(url)  //, { headers: headers }
+    return this.http.delete<Employee>(url)
       .pipe(
         catchError(this.handleError)
       );
   }
 
   updateEmployee(employee: Employee): Observable<Employee> {
-    // debugger  
-    // const headers = new HttpHeaders({ 'Content-Type': 'application/json' });  
     const url = `${this.employeesUrl}/${employee.id}`;
-    return this.http.put<Employee>(url, employee)   //, { headers: headers }
+    return this.http.put<Employee>(url, employee)
       .pipe(
         map(() => employee),
         catchError(this.handleError)
