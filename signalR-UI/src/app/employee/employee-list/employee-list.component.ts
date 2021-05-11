@@ -3,6 +3,7 @@ import { Employee } from '../employee';
 import { EmployeeService } from '../employee.service';
 import * as signalR from '@microsoft/signalr';
 import { environment } from 'src/environments/environment';
+import { NgxSpinnerService } from 'ngx-spinner';
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
@@ -16,7 +17,7 @@ export class EmployeeListComponent implements OnInit {
   errorMessage = '';
 
   _listFilter = '';
-  constructor(private employeeService: EmployeeService) { }
+  constructor(private employeeService: EmployeeService, private spinner: NgxSpinnerService) { }
 
   get listFilter(): string {
     return this._listFilter;
@@ -32,6 +33,11 @@ export class EmployeeListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.spinner.show();
+    setTimeout(() => {
+      /** spinner ends after 0.5 seconds */
+      this.spinner.hide();
+    }, 1000);
     this.getEmployeeData();
     const connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Information)

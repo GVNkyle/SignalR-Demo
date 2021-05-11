@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalService } from '../modal/modal.service';
 import * as signalR from '@microsoft/signalr';
-import { NotificationCountResult, NotificationResult } from '../Notification/notification';
-import { NotificationService } from '../Notification/notification.service';
 import { environment } from 'src/environments/environment';
+import { ModalService } from '../modal/modal.service';
+import { NotificationCountResult, NotificationResult } from '../Notification/notification';
+import { NotificationService } from '../notification/notification.service';
+
 
 @Component({
   selector: 'app-nav-menu',
@@ -13,7 +14,7 @@ import { environment } from 'src/environments/environment';
 export class NavMenuComponent implements OnInit {
 
   notification: NotificationCountResult;
-  messages: Array<NotificationResult>;
+  messages: Array<NotificationResult> = [];
   errorMessage = '';
 
   constructor(private notificationService: NotificationService, private modalService: ModalService) { }
@@ -22,7 +23,7 @@ export class NavMenuComponent implements OnInit {
 
   ngOnInit(): void {
     this.getNotificationCount();
-
+    this.getNotificationMessage();
     const connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Information)
       .withUrl(environment.baseUrl + 'notify')
@@ -37,7 +38,9 @@ export class NavMenuComponent implements OnInit {
     connection.on("BroadcastMessage", () => {
       this.getNotificationCount();
     });
+
   }
+
   getNotificationCount() {
     this.notificationService.getNotificationCount().subscribe(
       notification => {
@@ -52,8 +55,7 @@ export class NavMenuComponent implements OnInit {
       messages => {
         this.messages = messages;
       },
-      error => this.errorMessage = <any>error
-    );
+      error => this.errorMessage = <any>error);
   }
 
   collapse() {

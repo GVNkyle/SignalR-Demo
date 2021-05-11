@@ -33,15 +33,22 @@
 </footer>
 
 <app-modal id="custom-modal">
-    <button class="btn btn-primary" (click)="deleteNotifications();" style="margin-right: 10px;"
-        [disabled]="notification?.count==0">Delete all Notifications</button>
-    <button class="btn btn-secondary" (click)="closeModal();">Close</button>
+    <button class="btn btn-secondary" (click)="closeModal();" style="float: right;">Close</button>
+    <button class="btn btn-primary" (click)="deleteNotifications();" style="margin-right: 10px; float: right;"
+        [disabled]="notification?.count==0">Delete all Notifications
+    </button>
+
     <div style="margin-bottom: 10px;"></div>
-    <div *ngFor="let msg of messages" [ngSwitch]="msg.tranType">
-        <h6 *ngSwitchCase="'Add'"><span class="badge badge-success">New employee '{{msg.employeeName}}' added</span>
+    <div *ngFor="let msg of messages">
+        <h6 *ngIf="msg.tranType === 'Add' "><span class="badge bg-success">New employee '{{msg.employeeName}}'
+                added</span>
         </h6>
-        <h6 *ngSwitchCase="'Edit'"><span class="badge badge-info">Employee '{{msg.employeeName}}' edited</span></h6>
-        <h6 *ngSwitchCase="'Delete'"><span class="badge badge-warning">Employee '{{msg.employeeName}}' deleted</span>
+        <h6 *ngIf="msg.tranType === 'Edit' "><span class="badge bg-info text-dark">Employee '{{msg.employeeName}}'
+                edited</span>
         </h6>
+        <h6 *ngIf="msg.tranType == 'Delete' "><span class="badge bg-warning text-dark">Employee '{{msg.employeeName}}'
+                deleted</span>
+        </h6>
+        <!-- <h6>{{ msg | json }}</h6> -->
     </div>
 </app-modal>

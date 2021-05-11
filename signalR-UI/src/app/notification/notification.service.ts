@@ -30,9 +30,8 @@ export class NotificationService {
   }
 
   deleteNotifications(): Observable<{}> {
-    // const headers = new HttpHeaders({ 'Content-Type': 'application/json' });  
     const url = `${this.notificationsUrl}/deletenotifications`;
-    return this.http.delete(url)  //, { headers: headers }
+    return this.http.delete(url)
       .pipe(
         catchError(this.handleError)
       );

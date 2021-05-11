@@ -36,7 +36,7 @@
                 <tbody>
                     <tr *ngFor="let employee of filteredEmployees">
                         <td>
-                            <a [routerLink]="['/employees', employee.id]">
+                            <a [routerLink]="['/employees', employee.id,'edit']" style="text-decoration: none;">
                                 {{ employee.name }}
                             </a>
                         </td>
@@ -65,3 +65,6 @@
 <div *ngIf="errorMessage" class="alert alert-danger">
     Error: {{ errorMessage }}
 </div>
+<ngx-spinner bdColor="rgba(0, 0, 0, 0.8)" size="medium" color="#fff" type="square-jelly-box" [fullScreen]="true">
+    <p style="color: white"> Loading... </p>
+</ngx-spinner>

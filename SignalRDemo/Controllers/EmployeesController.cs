@@ -91,11 +91,14 @@ namespace SignalRDemo.Controllers
         {
             employee.Id = Guid.NewGuid().ToString();
             _context.Employee.Add(employee);
+
             Notification notification = new Notification()
             {
                 EmployeeName = employee.Name,
                 TranType = "Add"
             };
+            _context.Notification.Add(notification);
+
             try
             {
                 await _context.SaveChangesAsync();
