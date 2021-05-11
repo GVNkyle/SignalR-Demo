@@ -1,18 +1,13 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using SignalRDemo.Data;
 using SignalRDemo.Models;
+using Microsoft.AspNetCore.Http.Connections;
 
 namespace SignalRDemo
 {
@@ -38,12 +33,12 @@ namespace SignalRDemo
             services.AddDbContext<MyDbContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("MyDbContext")));
 
-            services.AddCors(o => o.AddPolicy("CorsPolicy", builder => {
+            services.AddCors(o => o.AddPolicy("CorsPolicy", builder =>
+            {
                 builder
-                .AllowAnyMethod()
-                .AllowAnyHeader()
-                .AllowCredentials()
-                .WithOrigins("http://localhost:4200");
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin();
             }));
 
             services.AddSignalR();
@@ -62,16 +57,13 @@ namespace SignalRDemo
             app.UseRouting();
 
             app.UseAuthorization();
+
             app.UseCors("CorsPolicy");
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapHub<BroadcastHub>("/notify");
-            });
-
-            app.UseEndpoints(endpoints =>
-            {
                 endpoints.MapControllers();
+                endpoints.MapHub<BroadcastHub>("/notify", options => options.Transports = HttpTransportType.WebSockets);
             });
         }
     }

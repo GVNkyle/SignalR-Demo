@@ -26,7 +26,10 @@ export class NavMenuComponent implements OnInit {
     this.getNotificationMessage();
     const connection = new signalR.HubConnectionBuilder()
       .configureLogging(signalR.LogLevel.Information)
-      .withUrl(environment.baseUrl + 'notify')
+      .withUrl(environment.baseUrl + 'notify', {
+        skipNegotiation: true,
+        transport: signalR.HttpTransportType.WebSockets
+      })
       .build();
 
     connection.start().then(function () {
