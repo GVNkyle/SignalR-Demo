@@ -36,7 +36,7 @@ export class EmployeeListComponent implements OnInit {
   ngOnInit(): void {
     this.spinner.show();
     setTimeout(() => {
-      /** spinner ends after 0.5 seconds */
+      /** spinner ends after 1 seconds */
       this.spinner.hide();
     }, 1000);
     this.getEmployeeData();
