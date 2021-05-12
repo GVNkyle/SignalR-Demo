@@ -31,8 +31,6 @@ import { BrowserModule } from '@angular/platform-browser';
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    environment.production ? [] : AkitaNgDevtools.forRoot(),
-    AkitaNgRouterStoreModule,
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
