@@ -4,7 +4,8 @@
     </div>
 
     <div class="card-body">
-        <form novalidate (ngSubmit)="saveEmployee()" [formGroup]="employeeForm">
+        <form novalidate (ngSubmit)="employeeForm.valid && saveEmployee(employeeForm.getRawValue())"
+            [formGroup]="employeeForm">
 
             <div class="form-group row mb-2">
                 <label class="col-md-3 col-form-label" for="employeeNameId">Employee Name</label>
@@ -66,18 +67,14 @@
 
             <div class="form-group row mb-2">
                 <div class="offset-md-2 col-md-6">
-                    <button class="btn btn-primary mr-3" style="width:80px; margin-right: 20px;" type="submit"
+                    <button class="btn btn-primary mr-3" style="width:80px; margin-right: 10px;" type="submit"
                         [title]="employeeForm.valid ? 'Save your entered data' : 'Disabled until the form data is valid'"
                         [disabled]="!employeeForm.valid">
                         Save
                     </button>
-                    <button class="btn btn-outline-secondary mr-3" style="width:80px; margin-right: 32px;" type="button"
-                        title="Cancel your edits" [routerLink]="['/employees']">
+                    <button class="btn btn-outline-secondary mr-3" style="width:80px; margin-right: 10px;" type="button"
+                        title="Cancel your edits" (click)="cancel()">
                         Cancel
-                    </button>
-                    <button class="btn btn-outline-warning" *ngIf="pageTitle != 'Add Employee'" style="width:80px;"
-                        type="button" title="Delete this product" (click)="deleteEmployee()">
-                        Delete
                     </button>
                 </div>
             </div>

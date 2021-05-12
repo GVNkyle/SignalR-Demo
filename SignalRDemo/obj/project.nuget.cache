@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "MX7KNmoEir44qCuwTyLGI/ouSFh4etrTEgWZVCABFY/5Z6Tp57QmTs8csYalLfc2OTHLL+nKcdoRquAqB2g7Rg==",
+  "dgSpecHash": "6XVuD/kE4V3/ZyocjbCBibSAHXRq7pLzTc24H3TD7uKgIfdIrmlAu7pd8h1xEpFxWFfaIE8QV9qeQwjvaTRlTA==",
   "success": true,
-  "projectFilePath": "E:\\KhoaIT\\SignalR\\SignalRDemo\\SignalRDemo.csproj",
+  "projectFilePath": "E:\\KhoaIT\\SignalR\\signalRDemo\\SignalRDemo.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\khoa.dang\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\khoa.dang\\.nuget\\packages\\microsoft.aspnet.signalr\\2.4.2\\microsoft.aspnet.signalr.2.4.2.nupkg.sha512",

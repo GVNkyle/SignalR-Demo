@@ -1,22 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, tap } from 'rxjs/operators';
 import { Employee } from '../models/employee';
 import { environment } from 'src/environments/environment';
+import { EmployeeStore } from '../stores/employee.store';
+import { debug } from 'console';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
   private employeesUrl = environment.baseUrl + 'api/employees';
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private employeeStore: EmployeeStore) { }
 
-  getEmployees(): Observable<Employee[]> {
+  getEmployees() {
     return this.http.get<Employee[]>(this.employeesUrl)
-      .pipe(
-        catchError(this.handleError)
-      );
+      .pipe(tap(employees => this.employeeStore.set(employees)))
   }
 
   getEmployee(id: string): Observable<Employee> {
@@ -32,26 +32,19 @@ export class EmployeeService {
 
   createEmployee(employee: Employee): Observable<Employee> {
     return this.http.post<Employee>(this.employeesUrl, employee)
-      .pipe(
-        catchError(this.handleError)
-      );
+      .pipe(tap(employee => this.employeeStore.add(employee)));
   }
 
   deleteEmployee(id: string): Observable<{}> {
     const url = `${this.employeesUrl}/${id}`;
     return this.http.delete<Employee>(url)
-      .pipe(
-        catchError(this.handleError)
-      );
+      .pipe(tap(result => this.employeeStore.remove(id)));
   }
 
   updateEmployee(employee: Employee): Observable<Employee> {
     const url = `${this.employeesUrl}/${employee.id}`;
     return this.http.put<Employee>(url, employee)
-      .pipe(
-        map(() => employee),
-        catchError(this.handleError)
-      );
+      .pipe(tap(result => this.employeeStore.update(employee.id, employee)));
   }
 
   private handleError(err) {

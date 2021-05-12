@@ -1,10 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Employee } from '../../_core/models/employee';
 import { EmployeeService } from '../../_core/services/employee.service';
-import * as signalR from '@microsoft/signalr';
-import { environment } from 'src/environments/environment';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { SignalrService } from 'src/app/_core/services/signalr.service';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { timer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
+import { EmployeeQuery } from 'src/app/_core/queries/employee.query';
+import { EmployeeStore } from 'src/app/_core/stores/employee.store';
+import { Router } from '@angular/router';
+@UntilDestroy()
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
@@ -18,7 +23,14 @@ export class EmployeeListComponent implements OnInit {
   errorMessage = '';
 
   _listFilter = '';
-  constructor(private employeeService: EmployeeService, private spinner: NgxSpinnerService, private signalRService: SignalrService) { }
+  constructor(
+    private employeeService: EmployeeService,
+    private spinner: NgxSpinnerService,
+    private signalRService: SignalrService,
+    private employeeQuery: EmployeeQuery,
+    private employeeStore: EmployeeStore,
+    private router: Router
+  ) { }
 
   get listFilter(): string {
     return this._listFilter;
@@ -34,12 +46,13 @@ export class EmployeeListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.spinner.show();
-    setTimeout(() => {
-      /** spinner ends after 1 seconds */
-      this.spinner.hide();
-    }, 1000);
+    timer(1000).pipe(switchMap(() => this.employeeService.getEmployees())).subscribe();
     this.getEmployeeData();
+
+    this.employeeQuery
+      .selectLoading()
+      .pipe(untilDestroyed(this))
+      .subscribe(isLoading => isLoading ? this.spinner.show() : this.spinner.hide());
 
     let connection = this.signalRService.connectSignalR();
 
@@ -49,13 +62,10 @@ export class EmployeeListComponent implements OnInit {
   }
 
   getEmployeeData() {
-    this.employeeService.getEmployees().subscribe(
-      employees => {
-        this.employees = employees;
-        this.filteredEmployees = this.employees;
-      },
-      error => this.errorMessage = <any>error
-    );
+    this.employeeQuery.selectAll().pipe(untilDestroyed(this)).subscribe(employees => {
+      this.employees = employees;
+      this.filteredEmployees = this.employees;
+    })
   }
 
   deleteEmployee(id: string, name: string): void {
@@ -64,20 +74,25 @@ export class EmployeeListComponent implements OnInit {
     } else {
       if (confirm(`Are you sure want to delete this Employee: ${name}?`)) {
         this.employeeService.deleteEmployee(id)
-          .subscribe(
-            () => this.onSaveComplete(),
-            (error: any) => this.errorMessage = <any>error
-          );
+          .pipe(untilDestroyed(this))
+          .subscribe(() => this.onSaveComplete());
       }
     }
   }
   onSaveComplete(): void {
-    this.employeeService.getEmployees().subscribe(
-      employees => {
-        this.employees = employees;
-        this.filteredEmployees = this.employees;
-      },
-      error => this.errorMessage = <any>error
-    );
+    this.employeeQuery.selectAll().pipe(untilDestroyed(this)).subscribe(employees => {
+      this.employees = employees;
+      this.filteredEmployees = this.employees;
+    });
+  }
+
+  goToEdit(id?: string) {
+    if (id) {
+      this.employeeStore.setActive(id);
+      this.router.navigate(['/employees/' + id + '/edit']);
+    }
+    else {
+      this.router.navigate(['/employees/0/edit']);
+    }
   }
 }
