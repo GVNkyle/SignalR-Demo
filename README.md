@@ -1,5 +1,5 @@
 # SignalR-Demo
-# Angular 11 + .net 5.0 + EF + SignalR + SQLServer(built-in)
+# Angular 11 + .net 5.0 + EF + SignalR + SQLServer
 ## Employee Management System
 ## CRUD employee.
 #### Notification when changes
