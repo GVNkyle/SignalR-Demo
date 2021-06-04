@@ -21,7 +21,8 @@ export class EmployeeListComponent implements OnInit {
   filteredEmployees: Employee[] = [];
   employees: Employee[] = [];
   errorMessage = '';
-
+  sortName = 'asc';
+  sortAddress = 'asc';
   _listFilter = '';
   constructor(
     private employeeService: EmployeeService,
@@ -39,14 +40,14 @@ export class EmployeeListComponent implements OnInit {
     this._listFilter = value;
     this.filteredEmployees = this.listFilter ? this.performFilter(this.listFilter) : this.employees;
   }
-  performFilter(filterBy: string): Employee[] {
+  performFilter(filterBy?: string): Employee[] {
     filterBy = filterBy.toLocaleLowerCase();
     return this.employees.filter((employee: Employee) =>
       employee.name.toLocaleLowerCase().indexOf(filterBy) !== -1);
   }
 
   ngOnInit(): void {
-    timer(1000).pipe(switchMap(() => this.employeeService.getEmployees())).subscribe();
+    timer(1000).pipe(switchMap(() => this.employeeService.getEmployees(this.sortName, this.sortAddress))).subscribe();
     this.getEmployeeData();
 
     this.employeeQuery
@@ -95,4 +96,17 @@ export class EmployeeListComponent implements OnInit {
       this.router.navigate(['/employees/0/edit']);
     }
   }
+
+  sort(typeSort) {
+    if (typeSort == 'name') {
+      this.sortName = (this.sortName == 'asc') ? 'desc' : 'asc';
+    }
+    if (typeSort == 'address') {
+      this.sortAddress = (this.sortAddress == 'asc') ? 'desc' : 'asc';
+    }
+    this.employeeService.getEmployees(this.sortName, this.sortAddress).subscribe();
+    this.getEmployeeData();
+  }
+
+
 }

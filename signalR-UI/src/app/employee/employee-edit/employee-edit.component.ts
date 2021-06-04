@@ -42,7 +42,7 @@ export class EmployeeEditComponent implements OnInit {
     };
     this.employeeForm = this.fb.group({
       id: [''],
-      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      name: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(50)]],
       address: '',
       cityname: ['', [Validators.required]],
       gender: '',

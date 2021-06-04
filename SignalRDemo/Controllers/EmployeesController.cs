@@ -27,9 +27,31 @@ namespace SignalRDemo.Controllers
 
         // GET: api/Employees
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
+        public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee(string sortName, string sortAddress)
         {
-            return await _context.Employee.ToListAsync();
+            if (sortName == "asc")
+            {
+                if (sortAddress == "asc")
+                {
+                    return await _context.Employee.OrderBy(x => x.Name).ThenBy(x => x.Address).ToListAsync();
+                }
+                else
+                {
+                    return await _context.Employee.OrderBy(x => x.Name).ThenByDescending(x => x.Address).ToListAsync();
+                }
+            }
+            else
+            {
+                if (sortAddress == "asc")
+                {
+                    return await _context.Employee.OrderByDescending(x => x.Name).ThenBy(x => x.Address).ToListAsync();
+                }
+                else
+                {
+                    return await _context.Employee.OrderByDescending(x => x.Name).ThenByDescending(x => x.Address).ToListAsync();
+                }
+            }
+
         }
 
         // GET: api/Employees/5
@@ -49,7 +71,7 @@ namespace SignalRDemo.Controllers
         // PUT: api/Employees/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEmployee(string id, Employee employee)
+        public async Task<IActionResult> EditEmployee(string id, Employee employee)
         {
             if (id != employee.Id)
             {
@@ -87,7 +109,7 @@ namespace SignalRDemo.Controllers
         // POST: api/Employees
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Employee>> PostEmployee(Employee employee)
+        public async Task<ActionResult<Employee>> CreateEmployee(Employee employee)
         {
             employee.Id = Guid.NewGuid().ToString();
             _context.Employee.Add(employee);

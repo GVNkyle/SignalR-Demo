@@ -1,3 +1,6 @@
 thead {
     color: #337ab7;
 }
+table th.sort {
+    cursor: pointer;
+}

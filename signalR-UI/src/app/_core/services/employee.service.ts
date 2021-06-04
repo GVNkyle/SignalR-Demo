@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
 import { Employee } from '../models/employee';
@@ -14,8 +14,11 @@ export class EmployeeService {
   private employeesUrl = environment.baseUrl + 'api/employees';
   constructor(private http: HttpClient, private employeeStore: EmployeeStore) { }
 
-  getEmployees() {
-    return this.http.get<Employee[]>(this.employeesUrl)
+  getEmployees(sortName: string, sortAddress: string) {
+    let params = new HttpParams();
+    params = params.append("sortName", sortName);
+    params = params.append("sortAddress", sortAddress);
+    return this.http.get<Employee[]>(this.employeesUrl, { params })
       .pipe(tap(employees => this.employeeStore.set(employees)))
   }
 
