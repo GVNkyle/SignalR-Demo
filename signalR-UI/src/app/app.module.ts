@@ -17,6 +17,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { BrowserModule } from '@angular/platform-browser';
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    NgxPaginationModule,
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
@@ -42,6 +44,5 @@ import { BrowserModule } from '@angular/platform-browser';
     { provide: LocationStrategy, useClass: HashLocationStrategy },
   ],
   bootstrap: [AppComponent],
-  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule { }

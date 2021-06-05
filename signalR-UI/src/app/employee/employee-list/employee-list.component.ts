@@ -9,6 +9,8 @@ import { switchMap } from 'rxjs/operators';
 import { EmployeeQuery } from 'src/app/_core/queries/employee.query';
 import { EmployeeStore } from 'src/app/_core/stores/employee.store';
 import { Router } from '@angular/router';
+import { SortBy, SortParams } from 'src/app/_core/models/sort-params';
+import { Pagination } from 'src/app/_core/utilities/pagination';
 @UntilDestroy()
 @Component({
   selector: 'app-employee-list',
@@ -16,14 +18,28 @@ import { Router } from '@angular/router';
   styleUrls: ['./employee-list.component.css']
 })
 export class EmployeeListComponent implements OnInit {
-
   pageTitle = 'Employee List';
-  filteredEmployees: Employee[] = [];
   employees: Employee[] = [];
   errorMessage = '';
-  sortName = 'asc';
-  sortAddress = 'asc';
-  _listFilter = '';
+  filter = '';
+  pagination: Pagination = {
+    currentPage: 1,
+    pageSize: 10,
+    totalCount: 0,
+    totalPage: 0
+  }
+  sortColumn = SortColumn;
+  sorttype = SortBy;
+  sortParams: SortParams[] = [
+    {
+      sortBy: this.sortColumn.Name,
+      sortType: SortBy.Asc
+    },
+    {
+      sortBy: this.sortColumn.Address,
+      sortType: SortBy.Asc
+    }
+  ]
   constructor(
     private employeeService: EmployeeService,
     private spinner: NgxSpinnerService,
@@ -33,27 +49,19 @@ export class EmployeeListComponent implements OnInit {
     private router: Router
   ) { }
 
-  get listFilter(): string {
-    return this._listFilter;
-  }
-  set listFilter(value: string) {
-    this._listFilter = value;
-    this.filteredEmployees = this.listFilter ? this.performFilter(this.listFilter) : this.employees;
-  }
-  performFilter(filterBy?: string): Employee[] {
-    filterBy = filterBy.toLocaleLowerCase();
-    return this.employees.filter((employee: Employee) =>
-      employee.name.toLocaleLowerCase().indexOf(filterBy) !== -1);
-  }
+
 
   ngOnInit(): void {
-    timer(1000).pipe(switchMap(() => this.employeeService.getEmployees(this.sortName, this.sortAddress))).subscribe();
-    this.getEmployeeData();
 
+    timer(1000).pipe(switchMap(() => this.employeeService.getEmployees(this.sortParams, this.pagination, this.filter))).subscribe();
+    this.getEmployeeData();
     this.employeeQuery
       .selectLoading()
       .pipe(untilDestroyed(this))
       .subscribe(isLoading => isLoading ? this.spinner.show() : this.spinner.hide());
+
+    this.employeeQuery.select(state => state.pagination).subscribe(paginaton => this.pagination = paginaton);
+    this.employeeQuery.selectAll().pipe(untilDestroyed(this)).subscribe(employees => this.employees = employees);
 
     let connection = this.signalRService.connectSignalR();
 
@@ -63,50 +71,46 @@ export class EmployeeListComponent implements OnInit {
   }
 
   getEmployeeData() {
-    this.employeeQuery.selectAll().pipe(untilDestroyed(this)).subscribe(employees => {
-      this.employees = employees;
-      this.filteredEmployees = this.employees;
-    })
+    this.employeeService.getEmployees(this.sortParams, this.pagination, this.filter).subscribe();
   }
 
   deleteEmployee(id: string, name: string): void {
     if (id === '') {
-      this.onSaveComplete();
+      this.getEmployeeData();
     } else {
       if (confirm(`Are you sure want to delete this Employee: ${name}?`)) {
         this.employeeService.deleteEmployee(id)
           .pipe(untilDestroyed(this))
-          .subscribe(() => this.onSaveComplete());
+          .subscribe(() => this.getEmployeeData());
       }
     }
   }
-  onSaveComplete(): void {
-    this.employeeQuery.selectAll().pipe(untilDestroyed(this)).subscribe(employees => {
-      this.employees = employees;
-      this.filteredEmployees = this.employees;
-    });
-  }
 
-  goToEdit(id?: string) {
-    if (id) {
-      this.employeeStore.setActive(id);
-      this.router.navigate(['/employees/' + id + '/edit']);
-    }
-    else {
-      this.router.navigate(['/employees/0/edit']);
-    }
-  }
-
-  sort(typeSort) {
-    if (typeSort == 'name') {
-      this.sortName = (this.sortName == 'asc') ? 'desc' : 'asc';
-    }
-    if (typeSort == 'address') {
-      this.sortAddress = (this.sortAddress == 'asc') ? 'desc' : 'asc';
-    }
-    this.employeeService.getEmployees(this.sortName, this.sortAddress).subscribe();
+  pageChanged(event: any): void {
+    this.pagination.currentPage = event.page;
     this.getEmployeeData();
   }
 
+  goToEdit(id?: string) {
+    if (id != '') {
+      this.employeeStore.setActive(id);
+      this.router.navigate(['/employees/edit']);
+    }
+    this.router.navigate(['/employees/edit']);
+  }
 
+  sort(typeSort: SortColumn) {
+    let index = this.sortParams.findIndex(x => x.sortBy == typeSort);
+    let currentSortType = this.sortParams[index].sortType;
+    this.sortParams[index].sortType = currentSortType === SortBy.Asc ? SortBy.Desc : SortBy.Asc;
+    this.getEmployeeData()
+  }
+  performFilter() {
+    this.getEmployeeData()
+  }
+
+}
+enum SortColumn {
+  Name = 'Name',
+  Address = 'Address'
 }

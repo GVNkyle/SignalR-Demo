@@ -6,7 +6,7 @@
         <div class="row" style="margin-bottom:15px;">
             <div class="col-md-2">Filter by name:</div>
             <div class="col-md-5">
-                <input type="text" [(ngModel)]="listFilter" name="listFilter" id="listFilter" />
+                <input type="text" [(ngModel)]="filter" name="filter" id="filter" (ngModelChange)="performFilter()" />
             </div>
             <div class="col-md-2"></div>
             <div class="col-md-3">
@@ -19,13 +19,13 @@
             <table class="table mb-0" *ngIf="employees && employees.length">
                 <thead>
                     <tr>
-                        <th class="sort" (click)="sort('name')">Name # &nbsp;
+                        <th class="sort" (click)="sort(sortColumn.Name)">Name
                             <i
-                                [class]="sortName === ''? 'fa fa-arrows-v'  : sortName == 'asc' ? 'fa fa-sort-amount-asc' : 'fa fa-sort-amount-desc'"></i>
+                                [class]="sortParams[0].sortType == sorttype.Asc? 'fa fa-sort-amount-asc' : 'fa fa-sort-amount-desc'"></i>
                         </th>
-                        <th class="sort" (click)="sort('address')">Address # &nbsp;
+                        <th class="sort" (click)="sort(sortColumn.Address)">Address
                             <i
-                                [class]="sortAddress === ''? 'fa fa-arrows-v'  : sortAddress == 'asc' ? 'fa fa-sort-amount-asc' : 'fa fa-sort-amount-desc'"></i>
+                                [class]="sortParams[1].sortType === sorttype.Asc ? 'fa fa-sort-amount-asc' : 'fa fa-sort-amount-desc'"></i>
                         </th>
                         <th>Gender</th>
                         <th>Company</th>
@@ -35,7 +35,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let employee of filteredEmployees">
+                    <tr *ngFor="let employee of employees">
                         <td>
                             <a (click)="goToEdit(employee.id)" style="color: #0d6efd; cursor: pointer;">
                                 {{ employee.name }}
@@ -60,6 +60,11 @@
                 </tbody>
             </table>
         </div>
+        <pagination *ngIf="pagination.totalPage > 1" [boundaryLinks]="true" [totalItems]="pagination.totalCount"
+            [(ngModel)]="pagination.currentPage" [itemsPerPage]="pagination.pageSize"
+            (pageChanged)="pageChanged($event)" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;"
+            lastText="&raquo;" [maxSize]=5>
+        </pagination>
     </div>
 </div>
 <div *ngIf="errorMessage" class="alert alert-danger">

@@ -268,3 +268,4 @@ E:\KhoaIT\Some Demos\SignalR\signalRDemo\obj\Debug\net5.0\ref\SignalRDemo.dll
 E:\KhoaIT\Some Demos\SignalR\signalRDemo\obj\Debug\net5.0\SignalRDemo.pdb
 E:\KhoaIT\Some Demos\SignalR\signalRDemo\obj\Debug\net5.0\SignalRDemo.genruntimeconfig.cache
 E:\KhoaIT\Some Demos\SignalR\signalRDemo\obj\Debug\net5.0\SignalRDemo.csprojAssemblyReference.cache
+E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\AutoMapper.dll

@@ -6,69 +6,54 @@ import { Employee } from '../models/employee';
 import { environment } from 'src/environments/environment';
 import { EmployeeStore } from '../stores/employee.store';
 import { debug } from 'console';
+import { Pagination, PaginationResult } from '../utilities/pagination';
+import { SortParams } from '../models/sort-params';
+import { OperationResult } from '../utilities/operation-result';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeService {
-  private employeesUrl = environment.baseUrl + 'api/employees';
+  private employeesUrl = environment.baseUrl + 'api/employees/';
   constructor(private http: HttpClient, private employeeStore: EmployeeStore) { }
 
-  getEmployees(sortName: string, sortAddress: string) {
-    let params = new HttpParams();
-    params = params.append("sortName", sortName);
-    params = params.append("sortAddress", sortAddress);
-    return this.http.get<Employee[]>(this.employeesUrl, { params })
-      .pipe(tap(employees => this.employeeStore.set(employees)))
+  getEmployees(sort: SortParams[], pagination: Pagination, filter: string) {
+    let params = new HttpParams()
+      .set("pageNumber", pagination.currentPage.toString())
+      .set("pageSize", pagination.pageSize.toString())
+      .set("filter", filter);
+    return this.http.post<PaginationResult<Employee>>(`${this.employeesUrl}GetAll`, sort, { params })
+      .pipe(tap(res => {
+        this.employeeStore.set(res.result);
+        this.employeeStore.update({ pagination: res.pagination });
+      }));
   }
 
-  getEmployee(id: string): Observable<Employee> {
-    if (id === '') {
-      return of(this.initializeEmployee());
-    }
-    const url = `${this.employeesUrl}/${id}`;
-    return this.http.get<Employee>(url)
-      .pipe(
-        catchError(this.handleError)
-      );
+  createEmployee(employee: Employee) {
+    return this.http.post<OperationResult>(this.employeesUrl + 'create', employee)
+      .pipe(tap(res => {
+        if (res.success)
+          this.employeeStore.add(employee);
+      }))
   }
 
-  createEmployee(employee: Employee): Observable<Employee> {
-    return this.http.post<Employee>(this.employeesUrl, employee)
-      .pipe(tap(employee => this.employeeStore.add(employee)));
+  deleteEmployee(id: string) {
+    const url = `${this.employeesUrl}${id}`;
+    return this.http.delete<OperationResult>(url)
+      .pipe(tap(res => {
+        if (res.success)
+          this.employeeStore.remove(id);
+      }))
   }
 
-  deleteEmployee(id: string): Observable<{}> {
-    const url = `${this.employeesUrl}/${id}`;
-    return this.http.delete<Employee>(url)
-      .pipe(tap(result => this.employeeStore.remove(id)));
+  updateEmployee(employee: Employee) {
+    const url = `${this.employeesUrl}${employee.id}`;
+    return this.http.put<OperationResult>(url, employee)
+      .pipe(tap(res => {
+        if (res.success)
+          this.employeeStore.update(employee.id, employee);
+      }));
   }
 
-  updateEmployee(employee: Employee): Observable<Employee> {
-    const url = `${this.employeesUrl}/${employee.id}`;
-    return this.http.put<Employee>(url, employee)
-      .pipe(tap(result => this.employeeStore.update(employee.id, employee)));
-  }
 
-  private handleError(err) {
-    let errorMessage: string;
-    if (err.error instanceof ErrorEvent) {
-      errorMessage = `An error occurred: ${err.error.message}`;
-    } else {
-      errorMessage = `Backend returned code ${err.status}: ${err.body.error}`;
-    }
-    console.error(err);
-    return throwError(errorMessage);
-  }
-  private initializeEmployee(): Employee {
-    return {
-      id: null,
-      name: null,
-      address: null,
-      gender: null,
-      company: null,
-      designation: null,
-      cityname: null
-    };
-  }
 }

@@ -1,4 +1,4 @@
-namespace SignalRDemo.Models
+namespace signalRDemo.Helpers.Utilities
 {
     public class NotificationResult
     {

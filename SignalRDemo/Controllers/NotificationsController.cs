@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using signalRDemo._Services.Interfaces;
+using signalRDemo.Helpers.Utilities;
 using SignalRDemo.Data;
-using SignalRDemo.Models;
+using SignalRDemo.Models.Hubs;
 
 namespace SignalRDemo.Controllers
 {
@@ -15,52 +15,44 @@ namespace SignalRDemo.Controllers
     [ApiController]
     public class NotificationsController : ControllerBase
     {
-        private readonly MyDbContext _context;
         private readonly IHubContext<BroadcastHub, IHubClient> _hubContext;
+        private readonly INotificationService _notificationService;
 
-        public NotificationsController(MyDbContext context, IHubContext<BroadcastHub, IHubClient> hubContext)
+        public NotificationsController(IHubContext<BroadcastHub, IHubClient> hubContext, INotificationService notificationService)
         {
-            _context = context;
             _hubContext = hubContext;
+            _notificationService = notificationService;
         }
 
         // GET: api/Notifications
-        [Route("notificationcount")]
+        [Route("getCount")]
         [HttpGet]
         public async Task<ActionResult<NotificationCountResult>> GetNotification()
         {
-            var count = (from not in _context.Notification select not).CountAsync();
-            NotificationCountResult result = new NotificationCountResult
-            {
-                Count = await count
-            };
-            return result;
+            return await _notificationService.GetNotification();
+
         }
 
         // GET: api/Notifications/5
-        [Route("notificationresult")]
+        [Route("getAll")]
         [HttpGet]
-        public async Task<ActionResult<List<NotificationResult>>> GetNotification(int id)
+        public async Task<ActionResult<List<NotificationResult>>> GetAllNotification()
         {
-            var result = from message in _context.Notification
-                         orderby message.Id descending
-                         select new NotificationResult
-                         {
-                             EmployeeName = message.EmployeeName,
-                             TranType = message.TranType
-                         };
-            return await result.ToListAsync();
+            return await _notificationService.GetAllNotification();
         }
 
         // DELETE: api/Notifications/5
-        [Route("deletenotifications")]
+        [Route("delete")]
         [HttpDelete]
-        public async Task<IActionResult> DeleteNotification()
+        public async Task<OperationResult> DeleteNotification()
         {
-            await _context.Database.ExecuteSqlRawAsync("TRUNCATE TABLE Notification");
-            await _context.SaveChangesAsync();
-            await _hubContext.Clients.All.BroadcastMessage();
-            return NoContent();
+            var res = await _notificationService.DeleteNotification();
+            if (res.Success)
+            {
+                // await _hubContext.Clients.All.BroadcastMessage();
+                return new OperationResult { Caption = "Success", Message = "Delete Notification Success", Success = true };
+            }
+            return new OperationResult { Caption = "Failed", Message = "Fail on Delete Notification", Success = false };
         }
 
     }

@@ -4,6 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { NotificationCountResult, NotificationResult } from '../models/notification';
+import { OperationResult } from '../utilities/operation-result';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class NotificationService {
   constructor(private http: HttpClient) { }
 
   getNotificationCount(): Observable<NotificationCountResult> {
-    const url = `${this.notificationsUrl}/notificationcount`;
+    const url = `${this.notificationsUrl}/getCount`;
     return this.http.get<NotificationCountResult>(url)
       .pipe(
         catchError(this.handleError)
@@ -22,19 +23,18 @@ export class NotificationService {
   }
 
   getNotificationMessage(): Observable<Array<NotificationResult>> {
-    const url = `${this.notificationsUrl}/notificationresult`;
+    const url = `${this.notificationsUrl}/getAll`;
     return this.http.get<Array<NotificationResult>>(url)
       .pipe(
         catchError(this.handleError)
       );
   }
 
-  deleteNotifications(): Observable<{}> {
-    const url = `${this.notificationsUrl}/deletenotifications`;
-    return this.http.delete(url)
-      .pipe(
-        catchError(this.handleError)
-      );
+  deleteNotifications() {
+    const url = `${this.notificationsUrl}/delete`;
+    return this.http.delete<OperationResult>(url).pipe(
+      catchError(this.handleError)
+    );
   }
 
   private handleError(err) {

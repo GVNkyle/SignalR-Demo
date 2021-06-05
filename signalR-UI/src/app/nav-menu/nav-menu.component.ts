@@ -61,13 +61,15 @@ export class NavMenuComponent implements OnInit {
 
   deleteNotifications(): void {
     if (confirm(`Are you sure want to delete all notifications?`)) {
-      this.notificationService.deleteNotifications()
-        .subscribe(
-          () => {
-            this.closeModal();
-          },
-          (error: any) => this.errorMessage = <any>error
-        );
+      this.notificationService.deleteNotifications().subscribe(res => {
+        if (res.success) {
+          this.closeModal();
+          this.getNotificationCount();
+        }
+      }, err => {
+        this.errorMessage = err;
+      });
+
     }
   }
   openModal() {

@@ -6,8 +6,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using SignalRDemo.Data;
-using SignalRDemo.Models;
 using Microsoft.AspNetCore.Http.Connections;
+using SignalRDemo.Models.Hubs;
+using signalRDemo._Repositories.Interfaces;
+using signalRDemo._Repositories.Repositories;
+using signalRDemo._Services.Interfaces;
+using signalRDemo._Services.Services;
 
 namespace SignalRDemo
 {
@@ -42,6 +46,14 @@ namespace SignalRDemo
             }));
 
             services.AddSignalR();
+
+            //Repository
+            services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
+
+            //Services
+            services.AddScoped<IEmployeeService, EmployeeService>();
+            services.AddScoped<INotificationService, NotificationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
