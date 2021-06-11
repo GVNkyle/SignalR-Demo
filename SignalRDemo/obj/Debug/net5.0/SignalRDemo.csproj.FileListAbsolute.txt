@@ -269,3 +269,9 @@ E:\KhoaIT\Some Demos\SignalR\signalRDemo\obj\Debug\net5.0\SignalRDemo.pdb
 E:\KhoaIT\Some Demos\SignalR\signalRDemo\obj\Debug\net5.0\SignalRDemo.genruntimeconfig.cache
 E:\KhoaIT\Some Demos\SignalR\signalRDemo\obj\Debug\net5.0\SignalRDemo.csprojAssemblyReference.cache
 E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\AutoMapper.dll
+E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\Microsoft.AspNetCore.Cryptography.Internal.dll
+E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\Microsoft.Extensions.Identity.Core.dll
+E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\Microsoft.Extensions.Identity.Stores.dll
+E:\KhoaIT\Some Demos\SignalR\signalRDemo\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

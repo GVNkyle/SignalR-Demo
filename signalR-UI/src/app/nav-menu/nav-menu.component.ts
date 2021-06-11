@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { environment } from 'src/environments/environment';
-
 import { NotificationCountResult, NotificationResult } from '../_core/models/notification';
 import { NotificationService } from '../_core/services/notification.service';
 import { ModalService } from '../_core/services/modal.service';
 import { SignalrService } from '../_core/services/signalr.service';
+import { Router } from '@angular/router';
+import { AuthService } from '../_core/services/auth.service';
 
 
 @Component({
@@ -19,14 +20,20 @@ export class NavMenuComponent implements OnInit {
   messages: Array<NotificationResult> = [];
   errorMessage = '';
 
-  constructor(private notificationService: NotificationService, private modalService: ModalService, private signalRService: SignalrService) { }
-
+  constructor(
+    private notificationService: NotificationService,
+    private modalService: ModalService,
+    private signalRService: SignalrService,
+    private router: Router,
+    private authService: AuthService) { }
+  flag: boolean = false;
   isExpanded = false;
 
   ngOnInit(): void {
     this.getNotificationCount();
     this.getNotificationMessage();
     let connection = this.signalRService.connectSignalR();
+    this.authService.loggedIn() ? this.flag = !this.flag : this.flag;
 
     connection.on("BroadcastMessage", () => {
       this.getNotificationCount();
@@ -81,4 +88,10 @@ export class NavMenuComponent implements OnInit {
     this.modalService.close('custom-modal');
   }
 
+  logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    this.flag = false;
+    this.router.navigate(['/']);
+  }
 }

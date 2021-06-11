@@ -40,3 +40,7 @@ html {
 
     font: 10px Arial, sans-serif;
 }
+#fakebt {
+    border: none;
+    background: none;
+}

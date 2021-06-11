@@ -18,6 +18,10 @@ import { AppRoutingModule } from './app-routing.module';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { RegisterComponent } from './register/register.component';
+import { LoginComponent } from './login/login.component';
+import { SnotifyModule, SnotifyService, ToastDefaults } from 'ng-snotify';
+import { UserComponent } from './user/user.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,7 +29,10 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     EmployeeEditComponent,
     ModalComponent,
     NavMenuComponent,
-    HomeComponent
+    HomeComponent,
+    RegisterComponent,
+    LoginComponent,
+    UserComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,11 +44,15 @@ import { PaginationModule } from 'ngx-bootstrap/pagination';
     HttpClientModule,
     NgxSpinnerModule,
     environment.production ? [] : AkitaNgDevtools.forRoot(),
-    AkitaNgRouterStoreModule
+    AkitaNgRouterStoreModule,
+    SnotifyModule
   ],
   providers: [
     { provide: LocationStrategy, useClass: HashLocationStrategy },
+    { provide: 'SnotifyToastConfig', useValue: ToastDefaults },
+    SnotifyService
   ],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }
